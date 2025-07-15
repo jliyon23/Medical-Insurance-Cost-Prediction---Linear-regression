@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 class="section-title"><i class="fas fa-cogs"></i> {{ details.name }} Model Details</h1>
+        <p class="lead text-muted">Comprehensive information about the {{ details.name }} model performance and characteristics</p>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-line text-success"></i> Model Performance</h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="model-score display-4 mb-3">{{ details.score }}</div>
+                    <p class="lead">R² Score</p>
+                    <div class="progress mb-3" style="height: 10px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ details.score * 100 }}%"></div>
+                    </div>
+                    <p class="text-muted">
+                        This score indicates how well the model explains the variance in insurance charges. 
+                        Higher values indicate better performance.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-sliders-h text-info"></i> Model Parameters</h5>
+                </div>
+                <div class="card-body">
+                    <div class="metric-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong>Intercept:</strong>
+                            <span class="badge bg-secondary">
+                                {% if details.intercept != 'N/A' %}
+                                    {{ "%.4f"|format(details.intercept) }}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    {% if details.coefficients != 'N/A' %}
+                    <div class="metric-card">
+                        <strong>Coefficients:</strong>
+                        <div class="mt-2">
+                            {% if details.coefficients is iterable and details.coefficients is not string %}
+                                {% for coef in details.coefficients %}
+                                    <span class="badge bg-primary me-1 mb-1">{{ "%.4f"|format(coef) }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="badge bg-secondary">{{ details.coefficients }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-book text-primary"></i> Model Information</h5>
+                </div>
+                <div class="card-body">
+                    {% if model_name == 'linear' %}
+                        <h6 class="text-primary mb-3">Linear Regression</h6>
+                        <p class="text-muted">Linear regression is a fundamental machine learning algorithm that models the relationship between features and the target variable using a linear equation. It's simple, interpretable, and serves as a good baseline model.</p>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="metric-card border-success">
+                                    <h6><i class="fas fa-plus-circle text-success"></i> Advantages</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li>• Simple and interpretable</li>
+                                        <li>• Fast training and prediction</li>
+                                        <li>• Good baseline model</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="metric-card border-warning">
+                                    <h6><i class="fas fa-minus-circle text-warning"></i> Limitations</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li>• Assumes linear relationship</li>
+                                        <li>• Sensitive to outliers</li>
+                                        <li>• Limited complexity</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="metric-card border-info">
+                                    <h6><i class="fas fa-lightbulb text-info"></i> Best For</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li>• Simple interpretable models</li>
+                                        <li>• Baseline comparisons</li>
+                                        <li>• Linear relationships</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    {% elif model_name == 'ridge' %}
+                        <h6 class="text-primary mb-3">Ridge Regression</h6>
+                        <p class="text-muted">Ridge regression is a linear regression variant that includes L2 regularization to prevent overfitting. It's particularly useful when dealing with multicollinearity.</p>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="metric-card border-success">
+                                    <h6><i class="fas fa-plus-circle text-success"></i> Advantages</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li>• Prevents overfitting</li>
+                                        <li>• Handles multicollinearity</li>
+                                        <li>• Stable coefficients</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="metric-card border-warning">
+                                    <h6><i class="fas fa-minus-circle text-warning"></i> Limitations</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li>• Doesn't select features</li>
+                                        <li>• Requires tuning alpha</li>
+                                        <li>• Still assumes linearity</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="metric-card border-info">
+                                    <h6><i class="fas fa-lightbulb text-info"></i> Best For</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li>• Many features</li>
+                                        <li>• Preventing overfitting</li>
+                                        <li>• Multicollinear data</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    {% elif model_name == 'lasso' %}
+                        <h6 class="text-primary mb-3">Lasso Regression</h6>
+                        <p class="text-muted">Lasso regression uses L1 regularization, which can drive some coefficients to zero, effectively performing feature selection automatically.</p>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="metric-card border-success">
+                                    <h6><i class="fas fa-plus-circle text-success"></i> Advantages</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li>• Automatic feature selection</li>
+                                        <li>• Prevents overfitting</li>
+                                        <li>• Sparse models</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="metric-card border-warning">
+                                    <h6><i class="fas fa-minus-circle text-warning"></i> Limitations</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li>• Unstable with correlated features</li>
+                                        <li>• Requires tuning alpha</li>
+                                        <li>• May remove important features</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="metric-card border-info">
+                                    <h6><i class="fas fa-lightbulb text-info"></i> Best For</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li>• Feature selection</li>
+                                        <li>• Sparse solutions</li>
+                                        <li>• High-dimensional data</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    {% elif model_name == 'random_forest' %}
+                        <h6 class="text-primary mb-3">Random Forest</h6>
+                        <p class="text-muted">Random Forest is an ensemble method that combines multiple decision trees to create a more robust and accurate model. It's known for its excellent performance and ability to handle complex relationships.</p>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="metric-card border-success">
+                                    <h6><i class="fas fa-plus-circle text-success"></i> Advantages</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li>• High accuracy</li>
+                                        <li>• Handles non-linear relationships</li>
+                                        <li>• Robust to outliers</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="metric-card border-warning">
+                                    <h6><i class="fas fa-minus-circle text-warning"></i> Limitations</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li>• Less interpretable</li>
+                                        <li>• Can overfit noisy data</li>
+                                        <li>• Computationally intensive</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="metric-card border-info">
+                                    <h6><i class="fas fa-lightbulb text-info"></i> Best For</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li>• High accuracy needs</li>
+                                        <li>• Complex relationships</li>
+                                        <li>• Production systems</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    {% elif model_name == 'polynomial' %}
+                        <h6 class="text-primary mb-3">Polynomial Regression</h6>
+                        <p class="text-muted">Polynomial regression extends linear regression by adding polynomial features, allowing it to capture non-linear relationships between features and the target variable.</p>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="metric-card border-success">
+                                    <h6><i class="fas fa-plus-circle text-success"></i> Advantages</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li>• Captures non-linear relationships</li>
+                                        <li>• Still relatively interpretable</li>
+                                        <li>• Flexible model complexity</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="metric-card border-warning">
+                                    <h6><i class="fas fa-minus-circle text-warning"></i> Limitations</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li>• Can overfit easily</li>
+                                        <li>• Computationally expensive</li>
+                                        <li>• Sensitive to outliers</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="metric-card border-info">
+                                    <h6><i class="fas fa-lightbulb text-info"></i> Best For</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li>• Non-linear relationships</li>
+                                        <li>• Curved data patterns</li>
+                                        <li>• Feature engineering</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="text-center">
+                <a href="/predict" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-calculator"></i> Use This Model
+                </a>
+                <a href="/analysis" class="btn btn-success btn-lg me-3">
+                    <i class="fas fa-chart-line"></i> View Analysis
+                </a>
+                <a href="/" class="btn btn-outline-secondary btn-lg">
+                    <i class="fas fa-home"></i> Back to Overview
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

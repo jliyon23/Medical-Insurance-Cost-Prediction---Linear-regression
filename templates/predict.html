@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-4">
+                <h1 class="section-title"><i class="fas fa-calculator"></i> Insurance Cost Prediction</h1>
+                <p class="lead text-muted">Enter your information below to get an accurate insurance cost prediction</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-form"></i> Prediction Form</h5>
+                </div>
+                <div class="card-body">
+                    <form id="predictionForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="age" class="form-label fw-bold">
+                                    <i class="fas fa-birthday-cake text-primary"></i> Age
+                                </label>
+                                <input type="number" class="form-control" id="age" name="age" 
+                                       min="18" max="100" required>
+                                <div class="form-text">Enter age between 18 and 100</div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="sex" class="form-label fw-bold">
+                                    <i class="fas fa-venus-mars text-primary"></i> Gender
+                                </label>
+                                <select class="form-select" id="sex" name="sex" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="bmi" class="form-label fw-bold">
+                                    <i class="fas fa-weight text-primary"></i> BMI
+                                </label>
+                                <input type="number" class="form-control" id="bmi" name="bmi" 
+                                       min="10" max="60" step="0.1" required>
+                                <div class="form-text">Body Mass Index (10-60)</div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="children" class="form-label fw-bold">
+                                    <i class="fas fa-child text-primary"></i> Children
+                                </label>
+                                <input type="number" class="form-control" id="children" name="children" 
+                                       min="0" max="10" required>
+                                <div class="form-text">Number of children (0-10)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="smoker" class="form-label fw-bold">
+                                    <i class="fas fa-smoking text-primary"></i> Smoker
+                                </label>
+                                <select class="form-select" id="smoker" name="smoker" required>
+                                    <option value="">Select Smoking Status</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="region" class="form-label fw-bold">
+                                    <i class="fas fa-map-marker-alt text-primary"></i> Region
+                                </label>
+                                <select class="form-select" id="region" name="region" required>
+                                    <option value="">Select Region</option>
+                                    <option value="northeast">Northeast</option>
+                                    <option value="northwest">Northwest</option>
+                                    <option value="southeast">Southeast</option>
+                                    <option value="southwest">Southwest</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="model" class="form-label fw-bold">
+                                <i class="fas fa-brain text-primary"></i> Prediction Model
+                            </label>
+                            <select class="form-select" id="model" name="model" required>
+                                <option value="">Select Model</option>
+                                <option value="linear">Linear Regression</option>
+                                <option value="ridge">Ridge Regression</option>
+                                <option value="lasso">Lasso Regression</option>
+                                <option value="random_forest">Random Forest</option>
+                                <option value="polynomial">Polynomial Regression</option>
+                            </select>
+                            <div class="form-text">Choose the machine learning model for prediction</div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-calculator"></i> Predict Insurance Cost
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Results Section -->
+            <div id="resultSection" class="mt-4" style="display: none;">
+                <div class="card border-success">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-check-circle"></i> Prediction Result</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <h2 class="text-success mb-3">
+                            $<span id="predictionValue"></span>
+                        </h2>
+                        <p class="lead">Predicted Annual Insurance Cost</p>
+                        <p class="text-muted">Model Used: <span id="modelUsed" class="fw-bold"></span></p>
+                        
+                        <div class="mt-4">
+                            <button class="btn btn-outline-primary me-2" onclick="resetForm()">
+                                <i class="fas fa-redo"></i> New Prediction
+                            </button>
+                            <a href="/analysis" class="btn btn-outline-success">
+                                <i class="fas fa-chart-line"></i> View Analysis
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Error Section -->
+            <div id="errorSection" class="mt-4" style="display: none;">
+                <div class="alert alert-danger border-danger">
+                    <h5><i class="fas fa-exclamation-triangle"></i> Prediction Error</h5>
+                    <p id="errorMessage" class="mb-3"></p>
+                    <button class="btn btn-outline-danger btn-sm" onclick="resetForm()">
+                        <i class="fas fa-redo"></i> Try Again
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h6 class="mb-0">Calculating prediction...</h6>
+                <small class="text-muted">Please wait while our AI processes your data</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('predictionForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Show loading modal
+    const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+    loadingModal.show();
+    
+    // Hide previous results
+    document.getElementById('resultSection').style.display = 'none';
+    document.getElementById('errorSection').style.display = 'none';
+    
+    // Gather form data
+    const formData = new FormData(this);
+    
+    // Send prediction request
+    fetch('/predict', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        loadingModal.hide();
+        
+        if (data.success) {
+            document.getElementById('predictionValue').textContent = data.prediction.toLocaleString();
+            document.getElementById('modelUsed').textContent = data.model_used;
+            document.getElementById('resultSection').style.display = 'block';
+            
+            // Scroll to results
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+        } else {
+            document.getElementById('errorMessage').textContent = data.error;
+            document.getElementById('errorSection').style.display = 'block';
+        }
+    })
+    .catch(error => {
+        loadingModal.hide();
+        document.getElementById('errorMessage').textContent = 'An unexpected error occurred. Please try again.';
+        document.getElementById('errorSection').style.display = 'block';
+    });
+});
+
+function resetForm() {
+    document.getElementById('predictionForm').reset();
+    document.getElementById('resultSection').style.display = 'none';
+    document.getElementById('errorSection').style.display = 'none';
+    
+    // Remove validation classes
+    document.querySelectorAll('.is-valid, .is-invalid').forEach(function(element) {
+        element.classList.remove('is-valid', 'is-invalid');
+    });
+    
+    // Scroll to top of form
+    document.getElementById('predictionForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Form validation helpers
+document.querySelectorAll('input, select').forEach(function(element) {
+    element.addEventListener('change', function() {
+        if (this.checkValidity()) {
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        } else {
+            this.classList.remove('is-valid');
+            this.classList.add('is-invalid');
+        }
+    });
+});
+
+// BMI helper tooltip
+document.getElementById('bmi').addEventListener('focus', function() {
+    if (!this.value) {
+        this.setAttribute('title', 'BMI = weight(kg) / height(m)²');
+    }
+});
+</script>
+{% endblock %}
